@@ -1,4 +1,13 @@
-import { BookOpen, GraduationCap, LayoutDashboard, RotateCcw, X } from 'lucide-react'
+import { useRef } from 'react'
+import {
+  BookOpen,
+  Download,
+  GraduationCap,
+  LayoutDashboard,
+  RotateCcw,
+  Upload,
+  X,
+} from 'lucide-react'
 import { curriculum } from '../data/curriculum.js'
 
 const accentBar = {
@@ -18,9 +27,20 @@ export default function Sidebar({
   overallPct,
   onSelect,
   onReset,
+  onExport,
+  onImport,
   open,
   onClose,
 }) {
+  const fileInputRef = useRef(null)
+
+  const triggerImport = () => fileInputRef.current?.click()
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (file) onImport?.(file)
+    e.target.value = '' // allow re-importing the same file later
+  }
+
   return (
     <>
       {/* Mobile overlay */}
@@ -126,7 +146,32 @@ export default function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-slate-800 p-3">
+        <div className="border-t border-slate-800 p-3 space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={onExport}
+              title="Download a JSON backup of your progress"
+              className="flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-accent-300 px-2 py-2 rounded-lg border border-slate-800 hover:border-accent-500/30 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export
+            </button>
+            <button
+              onClick={triggerImport}
+              title="Restore progress from a JSON backup"
+              className="flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-accent-300 px-2 py-2 rounded-lg border border-slate-800 hover:border-accent-500/30 transition-colors"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Import
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
           <button
             onClick={onReset}
             className="w-full flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-rose-300 px-3 py-2 rounded-lg border border-slate-800 hover:border-rose-500/30 transition-colors"
