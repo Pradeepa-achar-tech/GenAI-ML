@@ -1,0 +1,11 @@
+              id: 'm5-t27', title: 'OpenCV basics',
+              explain: '`cv2.imread/imwrite` for I/O, `cv2.cvtColor` for colour-space changes (BGR↔RGB, HSV). The Swiss army knife for classical CV preprocessing.',
+              steps: [
+                'Install: `pip install opencv-python`. Convention: `import cv2`.',
+                'Read: `img = cv2.imread("file.jpg")` — returns BGR numpy array.',
+                'Convert color spaces: `cv2.cvtColor(img, cv2.COLOR_BGR2RGB)`. CRUCIAL: matplotlib expects RGB.',
+                'Resize: `cv2.resize(img, (w, h))`. Save: `cv2.imwrite(path, img)`.',
+                'Display: `cv2.imshow("win", img); cv2.waitKey(0)`.',
+              ],
+              code: `import cv2\nimg = cv2.imread("photo.jpg")\nrgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nresized = cv2.resize(rgb, (224, 224))\ncv2.imwrite("resized.jpg", cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))`,
+              takeaway: 'OpenCV uses BGR by default; everything else uses RGB — convert immediately to avoid blue/red mix-ups in later code.',

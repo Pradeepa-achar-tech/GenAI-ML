@@ -1,0 +1,11 @@
+              id: 'm5-t29', title: 'Edge detection (Canny)',
+              explain: 'Canny: blur → gradient (Sobel) → non-max suppression → double threshold + hysteresis. Produces clean, thin edges. `cv2.Canny(img, low, high)`.',
+              steps: [
+                'Blur first to suppress noise (Gaussian).',
+                'Compute gradients (magnitude + direction) — Sobel kernels.',
+                'Non-max suppression: thin edges to 1-pixel.',
+                'Double threshold + hysteresis: keep strong edges and weak ones connected to strong.',
+                'Tune `low` and `high` thresholds — typical ratio 1:2 or 1:3.',
+              ],
+              code: `gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\nedges = cv2.Canny(gray, 100, 200)\nplt.imshow(edges, cmap="gray")`,
+              takeaway: 'Canny\'s thresholds are scale-dependent — re-tune them for new datasets, don\'t copy values from tutorials.',

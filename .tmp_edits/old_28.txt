@@ -1,0 +1,11 @@
+              id: 'm5-t28', title: 'Image processing: filtering, thresholding',
+              explain: 'Convolutional filters (Gaussian blur, sharpen) smooth or enhance. Thresholding (Otsu, adaptive) binarises images — first step in many segmentation pipelines.',
+              steps: [
+                'Gaussian blur: `cv2.GaussianBlur(img, (5,5), 0)` — denoise.',
+                'Sharpen: subtract blurred from original.',
+                'Threshold: `cv2.threshold(gray, T, 255, cv2.THRESH_BINARY)`.',
+                'Otsu: auto-pick T: `cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)`.',
+                'Adaptive threshold for varying lighting: `cv2.adaptiveThreshold`.',
+              ],
+              code: `gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\nblur = cv2.GaussianBlur(gray, (5, 5), 0)\n_, binary = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)`,
+              takeaway: 'Always Gaussian-blur before thresholding — it kills speckle noise that would otherwise create thousands of fragments.',

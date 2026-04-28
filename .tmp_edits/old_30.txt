@@ -1,0 +1,11 @@
+              id: 'm5-t30', title: 'CNN for image classification',
+              explain: 'Input image → conv blocks → global pooling → dense → softmax. Augment data (flip, crop, color jitter) and use transfer learning unless you have lots of data.',
+              steps: [
+                'Resize images to a fixed size (e.g., 224×224).',
+                'Normalize per channel using ImageNet stats if using pretrained.',
+                'Augment: random flip, crop, color jitter, mixup.',
+                'Train head first with frozen backbone, then fine-tune top layers.',
+                'Save best model on val accuracy/F1.',
+              ],
+              code: `from torchvision import models, transforms\nbase = models.resnet50(weights="DEFAULT")\nfor p in base.parameters(): p.requires_grad = False\nbase.fc = nn.Linear(2048, num_classes)`,
+              takeaway: 'Always start with transfer learning — even ResNet from 2015 beats a hand-built CNN on most domain-specific tasks.',

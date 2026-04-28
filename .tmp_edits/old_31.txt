@@ -1,0 +1,11 @@
+              id: 'm5-t31', title: 'YOLO object detection',
+              explain: 'You Only Look Once: a single forward pass predicts bounding boxes + class probabilities for the whole image. Fast enough for real-time video.',
+              steps: [
+                'Install Ultralytics: `pip install ultralytics`.',
+                'Use `YOLO("yolov8n.pt")` (nano), `yolov8s/m/l/x` for bigger.',
+                'Predict: `model("image.jpg")` returns boxes, classes, confidences.',
+                'Train on custom data: prep YOLO-format labels (.txt per image).',
+                'Evaluate via mAP@0.5 — standard metric for object detection.',
+              ],
+              code: `from ultralytics import YOLO\nmodel = YOLO("yolov8n.pt")\nresults = model("street.jpg")\nfor r in results:\n    print(r.boxes.xyxy, r.boxes.cls)\n# Train on custom data:\n# model.train(data="dataset.yaml", epochs=50, imgsz=640)`,
+              takeaway: 'YOLOv8 nano runs at 60+ FPS on a laptop GPU — start there; only step up to medium/large if recall isn\'t enough.',
