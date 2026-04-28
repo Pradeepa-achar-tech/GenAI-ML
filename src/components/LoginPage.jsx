@@ -125,87 +125,74 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* ── Logo — top-left ── */}
-          <div className="relative flex items-center gap-3 mb-auto pb-8">
-            <div className="w-9 h-9 rounded-xl bg-accent-500/15 border border-accent-500/30 flex items-center justify-center">
-              <GraduationCap className="w-4.5 h-4.5 text-accent-400" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white leading-tight">GenAI - ML Tutorial</p>
-              <p className="text-[11px] font-extrabold italic bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
-                by Thanthrajnaani
-              </p>
-            </div>
-          </div>
+          {/* ── All content in one centred column ── */}
+          <div className="relative flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full py-6">
 
-          {/* ── Hero — vertically centred ── */}
-          <div className="relative flex-1 flex flex-col justify-center">
+            {/* Logo */}
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-9 h-9 rounded-xl bg-accent-500/15 border border-accent-500/30 flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-4 h-4 text-accent-400" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white leading-tight">GenAI - ML Tutorial</p>
+                <p className="text-[11px] font-extrabold italic bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
+                  by Thanthrajnaani
+                </p>
+              </div>
+            </div>
 
-            {/* Sub-badge — centred above */}
-            <div className="flex justify-center mb-6">
+            {/* Sub-badge */}
+            <div className="mb-5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-medium text-slate-400">
                 <Sparkles className="w-3 h-3 text-accent-400" />
                 Structured · Hands-on · Community-driven
               </span>
             </div>
 
-            {/* Headline row: text left · stamp right */}
-            <div className="flex items-center gap-6 sm:gap-8 mb-6">
-              {/* Text block */}
-              <div className="flex-1 min-w-0 text-center sm:text-left">
-                <h1 className="text-3xl md:text-4xl lg:text-[2.6rem] font-bold text-white leading-[1.15] mb-4">
+            {/* Headline row: text + stamp side-by-side */}
+            <div className="flex items-center gap-6 mb-8">
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-3xl md:text-4xl font-bold text-white leading-[1.15] mb-3">
                   Master{' '}
                   <span className="bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
                     GenAI & ML
                   </span>
-                  <br />
-                  from scratch
+                  <br />from scratch
                 </h1>
-                <p className="text-slate-400 text-base md:text-[1.05rem] max-w-md leading-relaxed mx-auto sm:mx-0">
+                <p className="text-slate-400 text-base leading-relaxed">
                   A structured, hands-on curriculum covering every layer — from Python
                   fundamentals to deploying production LLMs.{' '}
                   <span className="text-emerald-400 font-semibold">No paywalls. Ever.</span>
                 </p>
               </div>
 
-              {/* FREE Stamp — inline, scales with viewport */}
+              {/* FREE Stamp */}
               <div
                 aria-hidden
                 className="flex-shrink-0"
-                style={{
-                  width: 'clamp(100px, 12vw, 148px)',
-                  height: 'clamp(100px, 12vw, 148px)',
-                  transform: 'rotate(18deg)',
-                  position: 'relative',
-                }}
+                style={{ width: 130, height: 130, transform: 'rotate(18deg)', position: 'relative' }}
               >
-                {/* Outer glow */}
-                <div style={{
-                  position: 'absolute', inset: '-8px', borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(239,68,68,0.2) 0%, transparent 70%)',
-                }} />
-                {/* Circle */}
+                <div style={{ position: 'absolute', inset: '-8px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(239,68,68,0.2) 0%, transparent 70%)' }} />
                 <div style={{
                   width: '100%', height: '100%', borderRadius: '50%',
                   border: '3.5px solid #ef4444',
                   boxShadow: '0 0 18px rgba(239,68,68,0.5), 0 0 40px rgba(239,68,68,0.18)',
-                  background: 'rgba(127,29,29,0.15)',
-                  backdropFilter: 'blur(2px)',
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(127,29,29,0.15)', backdropFilter: 'blur(2px)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   position: 'relative',
                 }}>
-                  {/* Inner dashed ring */}
                   <div style={{ position: 'absolute', inset: '7px', borderRadius: '50%', border: '1.5px dashed rgba(239,68,68,0.45)' }} />
-                  <span style={{ fontSize: 'clamp(6px,0.8vw,8.5px)', letterSpacing: '3px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1px' }}>COMPLETELY</span>
-                  <span style={{ fontSize: 'clamp(26px,4vw,38px)', fontWeight: 900, color: '#ef4444', lineHeight: 1, textShadow: '0 0 20px rgba(239,68,68,0.7)', letterSpacing: '-1px' }}>FREE</span>
-                  <span style={{ fontSize: 'clamp(6px,0.8vw,8.5px)', letterSpacing: '3.5px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>COURSE</span>
+                  <span style={{ fontSize: '7px', letterSpacing: '3px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1px' }}>COMPLETELY</span>
+                  <span style={{ fontSize: '34px', fontWeight: 900, color: '#ef4444', lineHeight: 1, textShadow: '0 0 20px rgba(239,68,68,0.7)', letterSpacing: '-1px' }}>FREE</span>
+                  <span style={{ fontSize: '7px', letterSpacing: '3.5px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>COURSE</span>
                 </div>
               </div>
             </div>
 
             {/* Feature grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-w-2xl mx-auto sm:mx-0 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-left">
               {features.map(({ icon: Icon, title, desc, color }) => (
                 <div
                   key={title}
