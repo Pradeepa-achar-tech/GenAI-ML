@@ -47,6 +47,43 @@ export default function App() {
     }
   }
 
+  const handleExport = () => {
+    const data = progress.exportState()
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const stamp = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `genai-ml-progress-${stamp}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = (file) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result)
+        if (
+          !window.confirm(
+            'Import this backup? Your current progress will be replaced.'
+          )
+        )
+          return
+        progress.importState(data)
+      } catch (err) {
+        window.alert(
+          'Could not import: ' + (err?.message || 'invalid JSON file.')
+        )
+      }
+    }
+    reader.readAsText(file)
+  }
+
   const activeModule =
     view === 'module'
       ? curriculum.modules.find((m) => m.id === activeModuleId)
@@ -63,6 +100,8 @@ export default function App() {
         overallPct={overall.pct}
         onSelect={handleSidebarSelect}
         onReset={handleReset}
+        onExport={handleExport}
+        onImport={handleImport}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />

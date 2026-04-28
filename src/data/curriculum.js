@@ -8798,6 +8798,20 @@ export const flattenTopics = () => {
   for (const m of curriculum.modules) {
     for (const s of m.sections) {
       for (const t of s.topics) {
+        // Concatenate every body field into one searchable string.
+        // Strip markdown bold/code markers so search doesn't snag on them.
+        const bodyParts = [
+          t.explain,
+          t.analogy,
+          t.theory,
+          t.whyItMatters,
+          t.takeaway,
+          t.tryIt,
+          t.code,
+          Array.isArray(t.steps) ? t.steps.join(' ') : '',
+          Array.isArray(t.pitfalls) ? t.pitfalls.join(' ') : '',
+        ].filter(Boolean)
+        const body = bodyParts.join(' • ').replace(/\*\*/g, '').replace(/`/g, '')
         out.push({
           id: t.id,
           title: t.title,
@@ -8805,6 +8819,11 @@ export const flattenTopics = () => {
           moduleTitle: m.title,
           sectionId: s.id,
           sectionTitle: s.title,
+          body,
+          bodyLower: body.toLowerCase(),
+          titleLower: t.title.toLowerCase(),
+          sectionLower: s.title.toLowerCase(),
+          moduleLower: m.title.toLowerCase(),
         })
       }
     }

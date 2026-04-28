@@ -120,6 +120,32 @@ export default function useProgress() {
     setState({ ...defaultState })
   }, [])
 
+  // Snapshot current state as a serialisable object (used for export).
+  const exportState = useCallback(
+    () => ({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      topics: state.topics,
+      notes: state.notes,
+      quiz: state.quiz,
+    }),
+    [state]
+  )
+
+  // Replace current state from an imported object. Validates shape; throws on bad input.
+  const importState = useCallback((data) => {
+    if (!data || typeof data !== 'object') {
+      throw new Error('Backup file is empty or invalid.')
+    }
+    const next = {
+      topics:
+        data.topics && typeof data.topics === 'object' ? data.topics : {},
+      notes: data.notes && typeof data.notes === 'object' ? data.notes : {},
+      quiz: data.quiz && typeof data.quiz === 'object' ? data.quiz : {},
+    }
+    setState(next)
+  }, [])
+
   return {
     state,
     toggleTopic,
@@ -131,5 +157,7 @@ export default function useProgress() {
     moduleProgress,
     overallProgress,
     reset,
+    exportState,
+    importState,
   }
 }
