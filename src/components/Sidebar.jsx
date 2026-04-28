@@ -37,16 +37,19 @@ export default function Sidebar({
         }`}
       >
         <div className="px-5 py-5 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-accent-500/15 border border-accent-500/30 flex items-center justify-center">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-9 h-9 rounded-lg bg-accent-500/15 border border-accent-500/30 flex items-center justify-center flex-shrink-0">
               <GraduationCap className="w-5 h-5 text-accent-400" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h1 className="text-sm font-semibold text-white leading-tight">
-                GenAI &amp; ML
+                GenAI - ML Tutorial
               </h1>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                Learning App
+              <p className="text-[11px] text-slate-500 leading-tight truncate">
+                by{' '}
+                <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(249,115,22,0.35)]">
+                  Thanthrajnaani
+                </span>
               </p>
             </div>
           </div>

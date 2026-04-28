@@ -33,10 +33,13 @@ export default function Dashboard({ moduleProgress, overall, onOpenModule }) {
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-accent-500/10 blur-3xl" />
         <div className="relative flex items-center gap-2 text-accent-400 text-xs uppercase tracking-widest mb-2">
           <Sparkles className="w-3.5 h-3.5" />
-          Learnbay GenAI &amp; ML Program
+          Generative AI &amp; Machine Learning Program
         </div>
         <h1 className="relative text-2xl md:text-3xl font-bold text-white">
-          {curriculum.title}
+          GenAI - ML Tutorial by{' '}
+          <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(249,115,22,0.45)]">
+            Thanthrajnaani
+          </span>
         </h1>
         <p className="relative text-slate-400 mt-2 max-w-2xl">
           Track every topic, project, and quiz across the full 7-module curriculum —
