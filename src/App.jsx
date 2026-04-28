@@ -109,8 +109,15 @@ export default function App() {
           )}
         </main>
 
-        <footer className="px-4 md:px-8 py-4 border-t border-slate-900 text-xs text-slate-600">
-          Learnbay GenAI &amp; ML Program · Local progress saved in your browser.
+        <footer className="px-4 md:px-8 py-4 border-t border-slate-900 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Local progress saved in your browser.</span>
+          <span className="flex items-center gap-1.5">
+            Built with <span aria-label="love" className="text-rose-500">❤️</span> by{' '}
+            <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
+              Thanthrajnaani
+            </span>{' '}
+            in Kundapura
+          </span>
         </footer>
       </div>
     </div>
