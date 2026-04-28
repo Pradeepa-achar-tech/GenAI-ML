@@ -141,23 +141,6 @@ export default function LoginPage() {
           {/* ── Hero — vertically centered in remaining space ── */}
           <div className="relative flex-1 flex flex-col justify-center text-center">
 
-            {/* FREE badge */}
-            <div className="flex justify-center mb-4">
-              <div className="relative inline-flex items-center gap-2.5 px-5 py-2 rounded-full
-                              border border-emerald-400/35
-                              bg-emerald-500/10
-                              shadow-lg shadow-emerald-500/10">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-70" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                </span>
-                <span className="text-sm font-black tracking-widest uppercase free-shimmer">
-                  Completely FREE Course
-                </span>
-                <span className="text-sm">🎉</span>
-              </div>
-            </div>
-
             {/* Sub-badge */}
             <div className="flex justify-center mb-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-medium text-slate-400">
@@ -234,6 +217,77 @@ export default function LoginPage() {
 
           {/* Card */}
           <div className="relative z-10 w-full max-w-[360px]">
+
+            {/* ── FREE Stamp ── */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: '-52px',
+                right: '-28px',
+                width: '148px',
+                height: '148px',
+                transform: 'rotate(18deg)',
+                zIndex: 30,
+                pointerEvents: 'none',
+              }}
+            >
+              {/* Outer glow */}
+              <div style={{
+                position: 'absolute',
+                inset: '-8px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(52,211,153,0.18) 0%, transparent 70%)',
+              }} />
+              {/* Stamp circle */}
+              <div style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                border: '3.5px solid #34d399',
+                boxShadow: '0 0 18px rgba(52,211,153,0.45), 0 0 40px rgba(52,211,153,0.15)',
+                background: 'rgba(6,78,59,0.18)',
+                backdropFilter: 'blur(2px)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}>
+                {/* Inner ring */}
+                <div style={{
+                  position: 'absolute',
+                  inset: '7px',
+                  borderRadius: '50%',
+                  border: '1.5px dashed rgba(52,211,153,0.45)',
+                }} />
+                {/* Text */}
+                <span style={{
+                  fontSize: '8.5px',
+                  letterSpacing: '3.5px',
+                  color: '#6ee7b7',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  marginBottom: '1px',
+                }}>COMPLETELY</span>
+                <span style={{
+                  fontSize: '38px',
+                  fontWeight: 900,
+                  color: '#34d399',
+                  lineHeight: 1,
+                  textShadow: '0 0 20px rgba(52,211,153,0.6)',
+                  letterSpacing: '-1px',
+                }}>FREE</span>
+                <span style={{
+                  fontSize: '8.5px',
+                  letterSpacing: '4px',
+                  color: '#6ee7b7',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  marginTop: '2px',
+                }}>COURSE</span>
+              </div>
+            </div>
 
             {/* Mobile-only logo */}
             <div className="flex md:hidden items-center gap-2.5 mb-6">
