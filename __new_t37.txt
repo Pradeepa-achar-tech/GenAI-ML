@@ -1,0 +1,136 @@
+              id: 'm5-t37', title: 'Deep Q-Networks (DQN)',
+              explain: '**Deep Q-Network (DQN)** is Q-Learning with a neural network replacing the Q-table. Instead of storing one number per (state, action) pair, a neural net `Q_θ(s)` outputs Q values for all actions given the state. This lets RL scale to **continuous, high-dimensional states** like raw pixels — DQN famously learned 49 Atari games from screen pixels alone (DeepMind, 2015) using the same network architecture for every game. Two engineering tricks make it work: **experience replay** (sample uniformly from a buffer of past transitions) and a **target network** (a frozen copy of Q used in the bootstrap target).',
+              analogy: 'Think of tabular Q-learning as keeping a **paper logbook** with one row per (state, action) pair. For Tic-Tac-Toe (~5,000 states) the logbook fits in your bag. For chess (10⁴⁰ states) or Atari Pong (256³ × 84² screen pixels), you would need more paper than exists in the universe.\n\n**DQN replaces the logbook with a sketch artist.** You show the artist a board (the state, e.g., 84x84 pixels), and the artist sketches a row of action-scores from memory of similar boards seen before. The artist is a neural network — millions of parameters, but a fixed size. New states they have never seen exactly still get reasonable scores because the artist generalises across visually similar states.\n\nBut training the artist is fragile. Two specific traps:\n\n**Trap 1: Sequential samples are correlated.** If you train on consecutive Pong frames, all 60 are nearly identical — the network overfits to the current scene and forgets the rest. Solution: a **replay buffer**. Store the last 1 million transitions in memory; at each training step, sample 32 random transitions from anywhere in the buffer.\n\n**Trap 2: The target keeps moving.** In tabular Q-learning, when you update `Q[s, a] ← target`, the target depends on `max Q[s_next, ...]` from the OTHER cells. With a network, updating `Q_θ` to fit the target also changes the target itself — chasing your own tail. Solution: a **target network** `Q_θ⁻`, a frozen copy of `Q_θ` updated only every 10,000 steps. Now the target stays still long enough for the main network to learn.\n\nThese two tricks are why DQN works and naive deep Q-learning does not. They are the entire reason the DeepMind paper made history.',
+              theory: '**The DQN architecture** for Atari (Mnih et al. 2015):\n```\ninput  : 4 stacked grayscale frames, 84x84 (frame stacking captures motion)\nconv1  : 32 filters, 8x8, stride 4, ReLU\nconv2  : 64 filters, 4x4, stride 2, ReLU\nconv3  : 64 filters, 3x3, stride 1, ReLU\nflatten\nfc1    : 512 units, ReLU\noutput : n_actions linear units (one Q value per action)\n```\nFor MLP-based environments (CartPole, LunarLander), 2 hidden layers of 64-128 units suffice.\n\n**The DQN loss** at each gradient step:\n```\nSample mini-batch (s, a, r, s_next, done) of size 32 from replay buffer.\ny = r                            if done\n  = r + gamma * max Q_target(s_next, a)   otherwise\nloss = mean( (Q_main(s, a) - y)^2 )    # MSE or Huber loss\nbackprop through Q_main only; target network is frozen.\n```\n\n**Hyperparameters that decide success or failure**:\n• **Replay buffer size**: 1M transitions for Atari, 100k for CartPole.\n• **Target network update frequency**: every 10,000 gradient steps for Atari (hard update — full copy). **Soft updates** with `tau=0.005` (Polyak averaging) are smoother and used by SB3.\n• **Learning rate**: 1e-4 (Adam) for Atari. 1e-3 for small MLP envs.\n• **Mini-batch size**: 32 (original paper) or 64.\n• **Discount gamma**: 0.99 standard.\n• **Exploration epsilon**: linear from 1.0 to 0.05 over the first 1M frames in Atari.\n• **Loss function**: **Huber loss** (smooth L1) usually beats pure MSE — the original DQN paper used Huber.\n• **Gradient clipping**: clip norm to 10.0 to prevent occasional spikes from blowing the network.\n\n**The DQN training loop** (algorithmic skeleton):\n```\nInitialize replay D, Q_main with random weights, Q_target = Q_main\nfor episode = 1, M:\n    s = env.reset()\n    while not done:\n        a = epsilon-greedy on Q_main(s)\n        s_next, r, done = env.step(a)\n        D.add((s, a, r, s_next, done))\n        if len(D) > batch_size:\n            batch = D.sample(batch_size)\n            y = r + gamma * max Q_target(s_next)   # masked by done\n            loss = (Q_main(s, a) - y).pow(2).mean()\n            optimize Q_main on this loss\n        if step % target_update_every == 0:\n            Q_target.load_state_dict(Q_main.state_dict())\n        s = s_next\n```\n\n**DQN extensions you should know** (each plugs in as a one-line change in libraries):\n• **Double DQN** (van Hasselt 2015): use Q_main to pick the best action, Q_target to evaluate it. Fixes Q-learning overestimation bias.\n• **Dueling DQN** (Wang 2016): split network into V(s) + A(s, a) − mean(A). Better generalisation in states where action choice does not matter.\n• **Prioritized Replay** (Schaul 2016): sample transitions with high TD error more often.\n• **Noisy Nets**: replace ε-greedy with parameter-space noise.\n• **Distributional DQN (C51, QR-DQN)**: model the full return distribution, not just expectation.\n• **Rainbow** (Hessel 2018): combines all six. Still the SOTA off-policy value-based baseline.\n\n**When DQN works and when it does not**:\n• **Works**: discrete action spaces, single-agent, Markov state, long episodes OK, simulator can run fast (millions of steps).\n• **Struggles**: continuous action (use SAC, TD3, or DDPG instead), sparse rewards (need exploration bonuses), partial observability (need RNN), real-world physical robots (sample efficiency too low).',
+              whyItMatters: 'DQN is the algorithm that made deep RL real. The 2015 Nature paper is one of the most-cited ML works of the decade — it proved that the same architecture, same hyperparameters, could learn dozens of completely different games. Every game-AI startup, every research RL benchmark, every reading list begins here. Modern systems like AlphaStar, OpenAI Five, and the Atari 100k benchmarks all build on DQN-style value networks. In interviews: "explain experience replay" and "why is the target network frozen?" are guaranteed questions. In practice: even though PPO has overtaken DQN as the default for new projects, off-policy value-based methods are still preferred when sample efficiency matters (real robotics, expensive simulations) — and they all trace to DQN.',
+              steps: [
+                'Set up the env (Gymnasium) and a replay buffer (`deque(maxlen=100_000)` is fine for CartPole).',
+                'Define a Q-network: MLP for vector states, CNN for pixel states. Output dim = n_actions.',
+                'Make a **target network** by deepcopying the main network. Freeze its gradients (`requires_grad=False`).',
+                'Pick actions ε-greedy on the **main** network. Decay ε from 1.0 to 0.05 linearly.',
+                'After each env step, append `(s, a, r, s_next, done)` to the replay buffer.',
+                'Once buffer has > 1000 samples, sample a mini-batch every step. Compute the **TD target** with the target network and the loss with Huber.',
+                'Update the target network periodically: hard copy every 1000 steps, OR soft update `tau * main + (1-tau) * target` every step with tau=0.005.',
+                'For real projects, use **stable-baselines3** — `DQN("MlpPolicy", env).learn(total_timesteps=50_000)`. Hand-rolled DQN debugging takes weeks; SB3 is battle-tested.',
+              ],
+              code: `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+import gymnasium as gym
+from collections import deque
+import random
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# === Q-network ===
+class QNet(nn.Module):
+    def __init__(self, obs_dim, n_actions, hidden=128):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, hidden), nn.ReLU(),
+            nn.Linear(hidden, hidden),  nn.ReLU(),
+            nn.Linear(hidden, n_actions),
+        )
+    def forward(self, x):
+        return self.net(x)
+
+# === Replay buffer ===
+class ReplayBuffer:
+    def __init__(self, capacity=100_000):
+        self.buf = deque(maxlen=capacity)
+    def add(self, s, a, r, s_next, done):
+        self.buf.append((s, a, r, s_next, done))
+    def sample(self, batch_size):
+        batch = random.sample(self.buf, batch_size)
+        s, a, r, s_next, done = zip(*batch)
+        return (
+            torch.tensor(np.array(s), dtype=torch.float32, device=device),
+            torch.tensor(a, dtype=torch.long, device=device),
+            torch.tensor(r, dtype=torch.float32, device=device),
+            torch.tensor(np.array(s_next), dtype=torch.float32, device=device),
+            torch.tensor(done, dtype=torch.float32, device=device),
+        )
+    def __len__(self): return len(self.buf)
+
+# === Hyperparameters ===
+env = gym.make("CartPole-v1")
+obs_dim = env.observation_space.shape[0]   # 4
+n_actions = env.action_space.n             # 2
+gamma = 0.99
+batch_size = 64
+lr = 1e-3
+buffer_size = 50_000
+target_update_every = 500
+total_steps = 30_000
+eps_start, eps_end = 1.0, 0.05
+decay_steps = 10_000
+warmup = 1000
+
+# === Networks + optimizer ===
+q_main = QNet(obs_dim, n_actions).to(device)
+q_target = QNet(obs_dim, n_actions).to(device)
+q_target.load_state_dict(q_main.state_dict())
+for p in q_target.parameters(): p.requires_grad = False
+
+opt = torch.optim.Adam(q_main.parameters(), lr=lr)
+buffer = ReplayBuffer(buffer_size)
+
+# === Training loop ===
+s, _ = env.reset(seed=0)
+ep_return, returns_log = 0.0, []
+for step in range(total_steps):
+    eps = max(eps_end, eps_start - (eps_start - eps_end) * step / decay_steps)
+    if random.random() < eps:
+        a = env.action_space.sample()
+    else:
+        with torch.no_grad():
+            a = int(q_main(torch.tensor(s, dtype=torch.float32, device=device)).argmax())
+
+    s_next, r, term, trunc, _ = env.step(a)
+    done = term or trunc
+    buffer.add(s, a, r, s_next, float(term))   # only TERMINATED zeros bootstrap
+    s = s_next; ep_return += r
+
+    if done:
+        returns_log.append(ep_return)
+        s, _ = env.reset()
+        ep_return = 0.0
+
+    # Train one step
+    if len(buffer) > warmup:
+        bs, ba, br, bs_next, bdone = buffer.sample(batch_size)
+        with torch.no_grad():
+            target_q = q_target(bs_next).max(dim=1).values
+            y = br + gamma * target_q * (1.0 - bdone)
+        pred_q = q_main(bs).gather(1, ba.unsqueeze(1)).squeeze(1)
+        loss = F.smooth_l1_loss(pred_q, y)         # Huber loss
+        opt.zero_grad(); loss.backward()
+        nn.utils.clip_grad_norm_(q_main.parameters(), 10.0)
+        opt.step()
+
+    if step % target_update_every == 0:
+        q_target.load_state_dict(q_main.state_dict())
+
+    if step % 2000 == 0 and len(returns_log) > 5:
+        avg = np.mean(returns_log[-20:])
+        print(f"step={step:5d}  eps={eps:.3f}  recent_return={avg:.1f}")
+
+# === Stable-baselines3 equivalent in 4 lines ===
+# from stable_baselines3 import DQN
+# model = DQN("MlpPolicy", "CartPole-v1", verbose=1, buffer_size=50_000)
+# model.learn(total_timesteps=30_000)
+# model.save("dqn_cartpole")
+`,
+              pitfalls: [
+                '**Skipping the target network.** Bootstrapping `Q_main(s, a)` toward `max Q_main(s_next, ...)` makes targets chase the prediction — divergence in 1000 steps. Always use a frozen target network.',
+                '**Tiny replay buffer.** A 1000-sample buffer is dominated by recent correlated transitions. CartPole tolerates 10k; Atari needs 1M. If training is unstable, the first thing to try is increasing the buffer.',
+                '**Updating before warmup.** Starting gradient updates at step 1 trains on 1-2 transitions of garbage. Wait until the buffer has at least 1000 samples (CartPole) or 50k (Atari).',
+                '**Wrong terminal masking.** `target = r + gamma * Q_target(s_next).max() * (1 - done)`. If you forget the `(1 - done)` you bootstrap value into terminal states. Note: mask only on **terminated**, not **truncated** — Gymnasium splits these for a reason.',
+                '**MSE instead of Huber.** A single huge TD error in a batch gradient-explodes the network. **Huber loss** (smooth L1) clips the gradient at TD error = 1, dramatically stabilising training. The original DQN paper used Huber.',
+                '**No gradient clipping.** Even with Huber, occasional spikes happen. `clip_grad_norm_(params, 10.0)` after backward is mandatory.',
+                '**Overestimation bias.** `max Q_target(s_next)` systematically overestimates because `max` of noisy estimates is biased upward. Switch to **Double DQN**: `Q_target(s_next, argmax_a Q_main(s_next, a))`. SB3 has this as a flag.',
+                '**Hand-rolling DQN for production.** Hidden bugs (off-by-one in done masking, wrong action gather index, replay sampling with replacement vs without) eat weeks. Use `stable-baselines3` or `cleanrl` until you have a strong reason not to.',
+              ],
+              tryIt: 'Use stable-baselines3 to train DQN on LunarLander — a much harder env than CartPole — and watch convergence in real time:\n\n```\nfrom stable_baselines3 import DQN\nfrom stable_baselines3.common.evaluation import evaluate_policy\nfrom stable_baselines3.common.callbacks import EvalCallback\nimport gymnasium as gym\n\nenv = gym.make("LunarLander-v2")\neval_env = gym.make("LunarLander-v2")\n\nmodel = DQN(\n    "MlpPolicy", env, verbose=1,\n    learning_rate=6.3e-4,\n    buffer_size=50_000,\n    batch_size=128,\n    learning_starts=1000,\n    target_update_interval=250,\n    train_freq=4,\n    gradient_steps=-1,\n    exploration_fraction=0.12,\n    exploration_final_eps=0.1,\n    gamma=0.99,\n    tensorboard_log="./dqn_logs/",\n)\n\neval_callback = EvalCallback(\n    eval_env,\n    best_model_save_path="./best_lunar/",\n    log_path="./eval_logs/",\n    eval_freq=2000,\n    n_eval_episodes=5,\n)\n\nmodel.learn(total_timesteps=200_000, callback=eval_callback)\n\nmean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=20)\nprint(f"Final mean reward: {mean_reward:.1f} +/- {std_reward:.1f}")\n# Solved threshold for LunarLander is 200; well-trained DQN reaches ~250.\nmodel.save("dqn_lunar")\n```\n\nRun `tensorboard --logdir ./dqn_logs/` to watch training. Now extend it: try `DQN("CnnPolicy", "ALE/Breakout-v5", buffer_size=100_000)` — needs `pip install gymnasium[atari] ale-py autorom`. After 1M steps you should beat 50 points. What changes if you switch to a deeper net? (`policy_kwargs=dict(net_arch=[256, 256])`).',
+              takeaway: 'DQN = Q-learning + neural net + **replay buffer + target network**. Those two tricks are non-negotiable. For real projects, reach for `stable-baselines3` — hand-rolled DQN debugging takes weeks to get right, and Double/Dueling DQN are one-line upgrades there.',

@@ -1,0 +1,11 @@
+              id: 'm5-t32', title: 'Image segmentation (U-Net)',
+              explain: 'Pixel-level classification. U-Net has a contracting path (encoder) + expanding path (decoder) with skip connections to preserve spatial detail.',
+              steps: [
+                'Encoder: progressive downsampling — captures "what".',
+                'Decoder: upsamples back to original size.',
+                'Skip connections from encoder → decoder preserve spatial detail ("where").',
+                'Output: per-pixel class probabilities.',
+                'Loss: Dice + BCE for binary masks; per-pixel CE for multi-class.',
+              ],
+              code: `# Using segmentation_models_pytorch\nimport segmentation_models_pytorch as smp\nmodel = smp.Unet(\n    encoder_name="resnet34",\n    encoder_weights="imagenet",\n    in_channels=3,\n    classes=1,\n)\n# Then standard training loop with Dice loss`,
+              takeaway: 'Don\'t hand-roll U-Net — `segmentation_models_pytorch` gives you 30+ architectures with pretrained encoders for free.',
