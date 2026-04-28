@@ -138,54 +138,55 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ── Hero — vertically centered in remaining space ── */}
-          <div className="relative flex-1 flex flex-col justify-center text-center">
-
-            {/* ── FREE Stamp ── */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                top: '0px',
-                right: '0px',
-                width: '148px',
-                height: '148px',
-                transform: 'rotate(18deg)',
-                zIndex: 10,
-                pointerEvents: 'none',
-              }}
-            >
+          {/* ── FREE Stamp — desktop only, pinned to vertical centre of right edge ── */}
+          <div
+            aria-hidden
+            className="hidden lg:block"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '28px',
+              width: '148px',
+              height: '148px',
+              transform: 'translateY(-50%) rotate(18deg)',
+              zIndex: 10,
+              pointerEvents: 'none',
+            }}
+          >
+            <div style={{
+              position: 'absolute',
+              inset: '-8px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(239,68,68,0.18) 0%, transparent 70%)',
+            }} />
+            <div style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              border: '3.5px solid #ef4444',
+              boxShadow: '0 0 18px rgba(239,68,68,0.5), 0 0 40px rgba(239,68,68,0.18)',
+              background: 'rgba(127,29,29,0.15)',
+              backdropFilter: 'blur(2px)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+            }}>
               <div style={{
                 position: 'absolute',
-                inset: '-8px',
+                inset: '7px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(239,68,68,0.18) 0%, transparent 70%)',
+                border: '1.5px dashed rgba(239,68,68,0.45)',
               }} />
-              <div style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                border: '3.5px solid #ef4444',
-                boxShadow: '0 0 18px rgba(239,68,68,0.5), 0 0 40px rgba(239,68,68,0.18)',
-                background: 'rgba(127,29,29,0.15)',
-                backdropFilter: 'blur(2px)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  inset: '7px',
-                  borderRadius: '50%',
-                  border: '1.5px dashed rgba(239,68,68,0.45)',
-                }} />
-                <span style={{ fontSize: '8.5px', letterSpacing: '3.5px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1px' }}>COMPLETELY</span>
-                <span style={{ fontSize: '38px', fontWeight: 900, color: '#ef4444', lineHeight: 1, textShadow: '0 0 20px rgba(239,68,68,0.7)', letterSpacing: '-1px' }}>FREE</span>
-                <span style={{ fontSize: '8.5px', letterSpacing: '4px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>COURSE</span>
-              </div>
+              <span style={{ fontSize: '8.5px', letterSpacing: '3.5px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1px' }}>COMPLETELY</span>
+              <span style={{ fontSize: '38px', fontWeight: 900, color: '#ef4444', lineHeight: 1, textShadow: '0 0 20px rgba(239,68,68,0.7)', letterSpacing: '-1px' }}>FREE</span>
+              <span style={{ fontSize: '8.5px', letterSpacing: '4px', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>COURSE</span>
             </div>
+          </div>
+
+          {/* ── Hero — vertically centered in remaining space ── */}
+          <div className="relative flex-1 flex flex-col justify-center text-center lg:pr-44">
 
             {/* Sub-badge */}
             <div className="flex justify-center mb-6">
