@@ -7,7 +7,6 @@ import {
   BarChart3,
   Zap,
   Sparkles,
-  FlaskConical,
   ArrowRight,
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -36,12 +35,6 @@ const features = [
     title: 'Cloud Progress',
     desc: 'Synced across all your devices automatically',
     color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
-  },
-  {
-    icon: FlaskConical,
-    title: 'Hands-On Labs',
-    desc: 'Code examples and experiments at every stage',
-    color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
   },
   {
     icon: Zap,
