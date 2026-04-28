@@ -4,6 +4,7 @@ import {
   Download,
   GraduationCap,
   LayoutDashboard,
+  LogOut,
   RotateCcw,
   Upload,
   X,
@@ -21,6 +22,7 @@ const accentBar = {
 }
 
 export default function Sidebar({
+  user,
   activeView,
   activeModuleId,
   moduleProgress,
@@ -29,6 +31,7 @@ export default function Sidebar({
   onReset,
   onExport,
   onImport,
+  onSignOut,
   open,
   onClose,
 }) {
@@ -146,6 +149,34 @@ export default function Sidebar({
           })}
         </nav>
 
+        {/* User profile */}
+        {user && (
+          <div className="border-t border-slate-800 px-3 pt-3 pb-1">
+            <div className="flex items-center gap-2.5 px-1 mb-2.5">
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName}
+                  referrerPolicy="no-referrer"
+                  className="w-8 h-8 rounded-full border border-slate-700 flex-shrink-0"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-accent-500/20 flex items-center justify-center text-xs font-bold text-accent-400 flex-shrink-0">
+                  {user.displayName?.[0] ?? user.email?.[0]}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-white truncate leading-tight">
+                  {user.displayName ?? 'Learner'}
+                </p>
+                <p className="text-[10px] text-slate-500 truncate leading-tight">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="border-t border-slate-800 p-3 space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -179,6 +210,15 @@ export default function Sidebar({
             <RotateCcw className="w-3.5 h-3.5" />
             Reset all progress
           </button>
+          {onSignOut && (
+            <button
+              onClick={onSignOut}
+              className="w-full flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-rose-400 px-3 py-2 rounded-lg border border-slate-800 hover:border-rose-500/20 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign out
+            </button>
+          )}
         </div>
       </aside>
     </>

@@ -1,18 +1,46 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import Sidebar from './components/Sidebar.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import ModulePage from './components/ModulePage.jsx'
 import SearchBar from './components/SearchBar.jsx'
+import LoginPage from './components/LoginPage.jsx'
 import { curriculum } from './data/curriculum.js'
 import useProgress from './hooks/useProgress.js'
+import useFirestoreSync from './hooks/useFirestoreSync.js'
+import { useAuth } from './contexts/AuthContext.jsx'
 
 export default function App() {
+  const { user, loading: authLoading, signOutUser } = useAuth()
   const progress = useProgress()
-  const [view, setView] = useState('dashboard') // 'dashboard' | 'module'
+  const { cloudProgress, loadingCloud, syncProgress } = useFirestoreSync(user)
+
+  const [view, setView] = useState('dashboard')
   const [activeModuleId, setActiveModuleId] = useState(null)
   const [jumpTopicId, setJumpTopicId] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Track whether we've loaded cloud state into local progress yet
+  const cloudLoaded = useRef(false)
+
+  // When user logs out, reset the flag
+  useEffect(() => {
+    if (!user) cloudLoaded.current = false
+  }, [user])
+
+  // Load cloud progress into local state once (Firestore is authoritative)
+  useEffect(() => {
+    if (cloudProgress && !cloudLoaded.current) {
+      cloudLoaded.current = true
+      progress.importState(cloudProgress)
+    }
+  }, [cloudProgress])
+
+  // Sync any local progress changes back to Firestore (debounced)
+  useEffect(() => {
+    if (!user || !cloudLoaded.current) return
+    syncProgress(progress.state)
+  }, [progress.state, user])
 
   // Reset scroll on view change
   useEffect(() => {
@@ -49,11 +77,9 @@ export default function App() {
 
   const handleExport = () => {
     const data = progress.exportState()
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    })
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    const stamp = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+    const stamp = new Date().toISOString().slice(0, 10)
     const a = document.createElement('a')
     a.href = url
     a.download = `genai-ml-progress-${stamp}.json`
@@ -68,32 +94,51 @@ export default function App() {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result)
-        if (
-          !window.confirm(
-            'Import this backup? Your current progress will be replaced.'
-          )
-        )
-          return
+        if (!window.confirm('Import this backup? Your current progress will be replaced.')) return
         progress.importState(data)
       } catch (err) {
-        window.alert(
-          'Could not import: ' + (err?.message || 'invalid JSON file.')
-        )
+        window.alert('Could not import: ' + (err?.message || 'invalid JSON file.'))
       }
     }
     reader.readAsText(file)
   }
 
   const activeModule =
-    view === 'module'
-      ? curriculum.modules.find((m) => m.id === activeModuleId)
-      : null
+    view === 'module' ? curriculum.modules.find((m) => m.id === activeModuleId) : null
 
   const overall = progress.overallProgress(curriculum.modules)
+
+  // ── Auth loading splash ──
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-slate-800 border-t-accent-500 rounded-full animate-spin" />
+          <p className="text-sm text-slate-500">Loading…</p>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Not signed in ──
+  if (!user) return <LoginPage />
+
+  // ── Cloud progress loading splash ──
+  if (loadingCloud) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-slate-800 border-t-accent-500 rounded-full animate-spin" />
+          <p className="text-sm text-slate-500">Syncing your progress…</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex bg-slate-950">
       <Sidebar
+        user={user}
         activeView={view}
         activeModuleId={activeModuleId}
         moduleProgress={progress.moduleProgress}
@@ -102,6 +147,7 @@ export default function App() {
         onReset={handleReset}
         onExport={handleExport}
         onImport={handleImport}
+        onSignOut={signOutUser}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -118,6 +164,24 @@ export default function App() {
             </button>
             <div className="flex-1 flex justify-end md:justify-start">
               <SearchBar onJump={(mid, tid) => goModule(mid, tid)} />
+            </div>
+            {/* User avatar (desktop) */}
+            <div className="hidden md:flex items-center gap-2 ml-2">
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName}
+                  className="w-8 h-8 rounded-full border border-slate-700"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-accent-500/20 flex items-center justify-center text-xs font-bold text-accent-400">
+                  {user.displayName?.[0] ?? user.email?.[0]}
+                </div>
+              )}
+              <span className="text-sm text-slate-300 max-w-[140px] truncate">
+                {user.displayName ?? user.email}
+              </span>
             </div>
           </div>
         </header>
@@ -149,7 +213,7 @@ export default function App() {
         </main>
 
         <footer className="px-4 md:px-8 py-4 border-t border-slate-900 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Local progress saved in your browser.</span>
+          <span>Progress synced to Firebase · also cached locally.</span>
           <span className="flex items-center gap-1.5">
             Built with <span aria-label="love" className="text-rose-500">❤️</span> by{' '}
             <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
