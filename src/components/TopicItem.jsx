@@ -10,12 +10,38 @@ import {
   Compass,
   Target,
 } from 'lucide-react'
+import { useLang } from '../contexts/LanguageContext.jsx'
+import { kn } from '../data/translations_kn.js'
+
+// Merge English topic with Kannada translation (if available).
+// Kannada overrides only fields that are present in the translation.
+function useTopicContent(topic) {
+  const { lang } = useLang()
+  if (lang === 'en') return { content: topic, labels: null }
+
+  const t = kn.topics[topic.id]
+  const merged = t ? { ...topic, ...t } : topic
+  return { content: merged, labels: kn.ui }
+}
+
+// ── Section label lookup ────────────────────────────────────
+const defaultLabels = {
+  thinkOfItLike:  'Think of it like…',
+  theFullStory:   'The full story',
+  whyThisMatters: 'Why this matters',
+  stepByStep:     'Step-by-step',
+  example:        'Example',
+  watchOutFor:    'Watch out for',
+  tryItYourself:  'Try it yourself',
+  keyTakeaway:    'Key takeaway',
+  tutorial:       'Tutorial',
+  hide:           'Hide',
+}
 
 // Render a string with **bold** markdown converted to <strong>
 // and `inline code` converted to monospace span. Preserves line breaks.
 function FormattedText({ text }) {
   if (!text) return null
-  // Normalize: split by line breaks first, then within each line handle bold + code
   const lines = String(text).split('\n')
   return (
     <>
@@ -29,12 +55,10 @@ function FormattedText({ text }) {
 }
 
 function renderInline(line) {
-  // Tokenize on **bold** and `code`
   const out = []
   let i = 0
   let key = 0
   while (i < line.length) {
-    // Bold
     if (line[i] === '*' && line[i + 1] === '*') {
       const end = line.indexOf('**', i + 2)
       if (end !== -1) {
@@ -47,7 +71,6 @@ function renderInline(line) {
         continue
       }
     }
-    // Inline code
     if (line[i] === '`') {
       const end = line.indexOf('`', i + 1)
       if (end !== -1) {
@@ -63,7 +86,6 @@ function renderInline(line) {
         continue
       }
     }
-    // Plain run — find next special char
     let j = i + 1
     while (j < line.length && line[j] !== '*' && line[j] !== '`') j++
     out.push(<span key={key++}>{line.slice(i, j)}</span>)
@@ -104,16 +126,19 @@ function Section({ icon: Icon, label, color = 'slate', children }) {
 
 export default function TopicItem({ topic, done, onToggle }) {
   const [open, setOpen] = useState(false)
+  const { content, labels } = useTopicContent(topic)
+  const L = labels ?? defaultLabels
+
   const hasTutorial =
-    Boolean(topic.explain) ||
-    Boolean(topic.analogy) ||
-    Boolean(topic.theory) ||
-    Boolean(topic.whyItMatters) ||
-    (topic.steps && topic.steps.length) ||
-    Boolean(topic.code) ||
-    (topic.pitfalls && topic.pitfalls.length) ||
-    Boolean(topic.tryIt) ||
-    Boolean(topic.takeaway)
+    Boolean(content.explain) ||
+    Boolean(content.analogy) ||
+    Boolean(content.theory) ||
+    Boolean(content.whyItMatters) ||
+    (content.steps && content.steps.length) ||
+    Boolean(content.code) ||
+    (content.pitfalls && content.pitfalls.length) ||
+    Boolean(content.tryIt) ||
+    Boolean(content.takeaway)
 
   return (
     <div
@@ -124,7 +149,7 @@ export default function TopicItem({ topic, done, onToggle }) {
       <div className="flex items-start gap-2 px-2 py-2">
         <button
           onClick={() => onToggle(topic.id)}
-          aria-label={done ? 'Mark incomplete' : 'Mark complete'}
+          aria-label={done ? L.markIncomplete ?? defaultLabels.markIncomplete : L.markComplete ?? defaultLabels.markComplete}
           className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
             done
               ? 'bg-accent-500 border-accent-500 hover:bg-accent-600'
@@ -150,7 +175,7 @@ export default function TopicItem({ topic, done, onToggle }) {
           </span>
           {hasTutorial && (
             <span className="flex-shrink-0 flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
-              <span className="hidden sm:inline">{open ? 'Hide' : 'Tutorial'}</span>
+              <span className="hidden sm:inline">{open ? L.hide : L.tutorial}</span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
                   open ? 'rotate-180 text-accent-400' : 'group-hover:text-slate-300'
@@ -164,41 +189,41 @@ export default function TopicItem({ topic, done, onToggle }) {
       {open && hasTutorial && (
         <div className="pl-9 pr-3 pb-5 -mt-1 animate-slide-down">
           <div className="space-y-5">
-            {/* Quick overview (always shown if present) */}
-            {topic.explain && (
+            {/* Quick overview */}
+            {content.explain && (
               <div className="border-l-2 border-accent-500/40 pl-4">
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  <FormattedText text={topic.explain} />
+                  <FormattedText text={content.explain} />
                 </p>
               </div>
             )}
 
             {/* Real-world analogy / story */}
-            {topic.analogy && (
-              <Section icon={Compass} label="Think of it like…" color="emerald">
-                <FormattedText text={topic.analogy} />
+            {content.analogy && (
+              <Section icon={Compass} label={L.thinkOfItLike} color="emerald">
+                <FormattedText text={content.analogy} />
               </Section>
             )}
 
             {/* Detailed theory */}
-            {topic.theory && (
-              <Section icon={GraduationCap} label="The full story" color="blue">
-                <FormattedText text={topic.theory} />
+            {content.theory && (
+              <Section icon={GraduationCap} label={L.theFullStory} color="blue">
+                <FormattedText text={content.theory} />
               </Section>
             )}
 
             {/* Why it matters */}
-            {topic.whyItMatters && (
-              <Section icon={Sparkles} label="Why this matters" color="accent">
-                <FormattedText text={topic.whyItMatters} />
+            {content.whyItMatters && (
+              <Section icon={Sparkles} label={L.whyThisMatters} color="accent">
+                <FormattedText text={content.whyItMatters} />
               </Section>
             )}
 
             {/* Step-by-step */}
-            {topic.steps && topic.steps.length > 0 && (
-              <Section icon={Target} label="Step-by-step" color="slate">
+            {content.steps && content.steps.length > 0 && (
+              <Section icon={Target} label={L.stepByStep} color="slate">
                 <ol className="space-y-2">
-                  {topic.steps.map((step, idx) => (
+                  {content.steps.map((step, idx) => (
                     <li key={idx} className="flex gap-3">
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-500/15 text-accent-300 text-[11px] font-semibold flex items-center justify-center mt-0.5">
                         {idx + 1}
@@ -212,24 +237,24 @@ export default function TopicItem({ topic, done, onToggle }) {
               </Section>
             )}
 
-            {/* Code example */}
-            {topic.code && (
+            {/* Code example — always in English */}
+            {content.code && (
               <div className="border-l-2 border-slate-800 pl-4">
                 <div className="flex items-center gap-1.5 mb-2 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
                   <Code2 className="w-3.5 h-3.5" />
-                  Example
+                  {L.example}
                 </div>
                 <pre className="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 overflow-x-auto font-mono leading-relaxed">
-                  <code>{topic.code}</code>
+                  <code>{content.code}</code>
                 </pre>
               </div>
             )}
 
             {/* Common mistakes / pitfalls */}
-            {topic.pitfalls && topic.pitfalls.length > 0 && (
-              <Section icon={AlertTriangle} label="Watch out for" color="rose">
+            {content.pitfalls && content.pitfalls.length > 0 && (
+              <Section icon={AlertTriangle} label={L.watchOutFor} color="rose">
                 <ul className="space-y-1.5">
-                  {topic.pitfalls.map((p, idx) => (
+                  {content.pitfalls.map((p, idx) => (
                     <li key={idx} className="flex gap-2">
                       <span className="text-rose-400 flex-shrink-0">•</span>
                       <span><FormattedText text={p} /></span>
@@ -240,22 +265,22 @@ export default function TopicItem({ topic, done, onToggle }) {
             )}
 
             {/* Try it yourself */}
-            {topic.tryIt && (
-              <Section icon={Target} label="Try it yourself" color="amber">
-                <FormattedText text={topic.tryIt} />
+            {content.tryIt && (
+              <Section icon={Target} label={L.tryItYourself} color="amber">
+                <FormattedText text={content.tryIt} />
               </Section>
             )}
 
             {/* Key takeaway */}
-            {topic.takeaway && (
+            {content.takeaway && (
               <div className="flex gap-2 items-start bg-accent-500/10 border border-accent-500/20 rounded-lg p-3">
                 <Lightbulb className="w-4 h-4 text-accent-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="text-[11px] uppercase tracking-wider text-accent-400 font-semibold mb-0.5">
-                    Key takeaway
+                    {L.keyTakeaway}
                   </div>
                   <p className="text-sm text-slate-200 leading-relaxed">
-                    <FormattedText text={topic.takeaway} />
+                    <FormattedText text={content.takeaway} />
                   </p>
                 </div>
               </div>

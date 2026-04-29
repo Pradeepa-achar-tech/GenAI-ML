@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Search, X } from 'lucide-react'
 import { flattenTopics } from '../data/curriculum.js'
+import { useUiText } from '../utils/uiText.js'
 
 // Score and snippet helpers
 const TITLE_HIT = 100
@@ -23,6 +24,7 @@ const isMac =
   typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
 
 export default function SearchBar({ onJump }) {
+  const L = useUiText()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [activeIdx, setActiveIdx] = useState(0)
@@ -148,7 +150,7 @@ export default function SearchBar({ onJump }) {
           ref={inputRef}
           type="text"
           value={query}
-          placeholder="Search 267 topics — title or content…"
+          placeholder={L.searchPlaceholder}
           onChange={(e) => {
             setQuery(e.target.value)
             setOpen(true)
@@ -165,7 +167,7 @@ export default function SearchBar({ onJump }) {
               inputRef.current?.focus()
             }}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-slate-300"
-            aria-label="Clear search"
+            aria-label={L.clearSearch}
           >
             <X className="w-4 h-4" />
           </button>
@@ -183,7 +185,7 @@ export default function SearchBar({ onJump }) {
         >
           {results.length === 0 ? (
             <div className="px-4 py-6 text-sm text-slate-500 text-center">
-              No matching topics.
+              {L.noMatchingTopics}
             </div>
           ) : (
             <>
@@ -216,17 +218,17 @@ export default function SearchBar({ onJump }) {
               </ul>
               <div className="sticky bottom-0 px-4 py-1.5 bg-slate-900/95 border-t border-slate-800 text-[10px] text-slate-500 flex items-center justify-between">
                 <span>
-                  {results.length} {results.length === 1 ? 'result' : 'results'}
+                  {results.length} {results.length === 1 ? L.result : L.results}
                 </span>
                 <span className="flex items-center gap-3">
                   <span>
-                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">↑↓</kbd> navigate
+                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">↑↓</kbd> {L.navigate}
                   </span>
                   <span>
-                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">↵</kbd> open
+                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">↵</kbd> {L.open}
                   </span>
                   <span>
-                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">Esc</kbd> close
+                    <kbd className="px-1 rounded bg-slate-800 border border-slate-700 font-mono">Esc</kbd> {L.close}
                   </span>
                 </span>
               </div>

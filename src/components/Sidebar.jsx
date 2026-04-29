@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { curriculum } from '../data/curriculum.js'
+import { getModuleCopy, useIsKannada, useUiText } from '../utils/uiText.js'
 
 const accentBar = {
   emerald: 'bg-emerald-500',
@@ -36,6 +37,8 @@ export default function Sidebar({
   onClose,
 }) {
   const fileInputRef = useRef(null)
+  const L = useUiText()
+  const isKannada = useIsKannada()
 
   const triggerImport = () => fileInputRef.current?.click()
   const handleFileChange = (e) => {
@@ -66,7 +69,7 @@ export default function Sidebar({
             </div>
             <div className="min-w-0">
               <h1 className="text-sm font-semibold text-white leading-tight">
-                GenAI - ML Tutorial
+                {L.appTitle}
               </h1>
               <p className="text-[11px] text-slate-500 leading-tight truncate">
                 by{' '}
@@ -93,19 +96,20 @@ export default function Sidebar({
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
-          Dashboard
+          {L.dashboard}
           <span className="ml-auto text-xs text-slate-500">{overallPct}%</span>
         </button>
 
         <div className="px-5 mt-5 mb-2 flex items-center gap-2 text-[11px] uppercase tracking-wider text-slate-500">
           <BookOpen className="w-3.5 h-3.5" />
-          Modules
+          {L.modules}
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
           {curriculum.modules.map((m, idx) => {
             const prog = moduleProgress(m)
             const active = activeView === 'module' && activeModuleId === m.id
+            const copy = getModuleCopy(m, isKannada)
             return (
               <button
                 key={m.id}
@@ -128,7 +132,7 @@ export default function Sidebar({
                         {idx === 0 ? 'Module 0' : `Term ${idx}`}
                       </div>
                       <div className="text-sm font-medium text-slate-100 truncate">
-                        {m.title}
+                        {copy.title}
                       </div>
                     </div>
                   </div>
@@ -167,7 +171,7 @@ export default function Sidebar({
               )}
               <div className="min-w-0">
                 <p className="text-xs font-medium text-white truncate leading-tight">
-                  {user.displayName ?? 'Learner'}
+                  {user.displayName ?? L.learner}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate leading-tight">
                   {user.email}
@@ -181,19 +185,19 @@ export default function Sidebar({
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={onExport}
-              title="Download a JSON backup of your progress"
+              title={L.exportTitle}
               className="flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-accent-300 px-2 py-2 rounded-lg border border-slate-800 hover:border-accent-500/30 transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
-              Export
+              {L.export}
             </button>
             <button
               onClick={triggerImport}
-              title="Restore progress from a JSON backup"
+              title={L.importTitle}
               className="flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-accent-300 px-2 py-2 rounded-lg border border-slate-800 hover:border-accent-500/30 transition-colors"
             >
               <Upload className="w-3.5 h-3.5" />
-              Import
+              {L.import}
             </button>
             <input
               ref={fileInputRef}
@@ -208,7 +212,7 @@ export default function Sidebar({
             className="w-full flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-rose-300 px-3 py-2 rounded-lg border border-slate-800 hover:border-rose-500/30 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset all progress
+            {L.resetAllProgress}
           </button>
           {onSignOut && (
             <button
@@ -216,7 +220,7 @@ export default function Sidebar({
               className="w-full flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-rose-400 px-3 py-2 rounded-lg border border-slate-800 hover:border-rose-500/20 transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
-              Sign out
+              {L.signOut}
             </button>
           )}
         </div>

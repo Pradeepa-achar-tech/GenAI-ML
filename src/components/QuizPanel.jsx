@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { CheckCircle2, RotateCw, XCircle, Trophy } from 'lucide-react'
+import { useUiText } from '../utils/uiText.js'
 
 export default function QuizPanel({ moduleId, questions, savedResult, onSubmit }) {
+  const L = useUiText()
   const [answers, setAnswers] = useState({})
   const [submitted, setSubmitted] = useState(false)
 
@@ -40,15 +42,15 @@ export default function QuizPanel({ moduleId, questions, savedResult, onSubmit }
         <div>
           <h3 className="text-lg font-semibold text-white flex items-center gap-2">
             <Trophy className="w-5 h-5 text-accent-500" />
-            Module Quiz
+            {L.moduleQuiz}
           </h3>
           <p className="text-sm text-slate-400 mt-1">
-            {questions.length} questions • Pick the best answer.
+            {questions.length} questions • {L.pickBestAnswer}
           </p>
         </div>
         {savedResult && !submitted && (
           <div className="text-sm text-slate-400">
-            Last attempt:{' '}
+            {L.lastAttempt}:{' '}
             <span className="text-accent-400 font-medium">
               {savedResult.score} / {savedResult.total}
             </span>
@@ -116,7 +118,7 @@ export default function QuizPanel({ moduleId, questions, savedResult, onSubmit }
           disabled={!allAnswered}
           className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit answers
+          {L.submitAnswers}
         </button>
       ) : (
         <div className="card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -126,15 +128,15 @@ export default function QuizPanel({ moduleId, questions, savedResult, onSubmit }
             </p>
             <p className="text-sm text-slate-400">
               {score === questions.length
-                ? 'Perfect — you nailed every question.'
+                ? L.perfectScore
                 : score >= Math.ceil(questions.length * 0.7)
-                ? 'Solid work — most concepts locked in.'
-                : 'Review the topics above and try again.'}
+                ? L.solidScore
+                : L.reviewScore}
             </p>
           </div>
           <button onClick={handleReset} className="btn-ghost border border-slate-700">
             <RotateCw className="w-4 h-4 inline mr-1.5" />
-            Retake
+            {L.retake}
           </button>
         </div>
       )}

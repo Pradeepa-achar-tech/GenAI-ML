@@ -5,13 +5,16 @@ import Dashboard from './components/Dashboard.jsx'
 import ModulePage from './components/ModulePage.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import LoginPage from './components/LoginPage.jsx'
+import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import { curriculum } from './data/curriculum.js'
 import useProgress from './hooks/useProgress.js'
 import useFirestoreSync from './hooks/useFirestoreSync.js'
 import { useAuth } from './contexts/AuthContext.jsx'
+import { useUiText } from './utils/uiText.js'
 
 export default function App() {
   const { user, loading: authLoading, signOutUser } = useAuth()
+  const L = useUiText()
   const progress = useProgress()
   const { cloudProgress, loadingCloud, syncProgress } = useFirestoreSync(user)
 
@@ -68,7 +71,7 @@ export default function App() {
   const handleReset = () => {
     if (
       window.confirm(
-        'Reset ALL progress? This clears completed topics, notes, and quiz scores.'
+        L.resetConfirm
       )
     ) {
       progress.reset()
@@ -94,10 +97,10 @@ export default function App() {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result)
-        if (!window.confirm('Import this backup? Your current progress will be replaced.')) return
+        if (!window.confirm(L.importConfirm)) return
         progress.importState(data)
       } catch (err) {
-        window.alert('Could not import: ' + (err?.message || 'invalid JSON file.'))
+        window.alert(L.importError + (err?.message || L.invalidJson))
       }
     }
     reader.readAsText(file)
@@ -114,7 +117,7 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-slate-800 border-t-accent-500 rounded-full animate-spin" />
-          <p className="text-sm text-slate-500">Loading…</p>
+          <p className="text-sm text-slate-500">{L.loading}</p>
         </div>
       </div>
     )
@@ -129,7 +132,7 @@ export default function App() {
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-slate-800 border-t-accent-500 rounded-full animate-spin" />
-          <p className="text-sm text-slate-500">Syncing your progress…</p>
+          <p className="text-sm text-slate-500">{L.syncingProgress}</p>
         </div>
       </div>
     )
@@ -165,6 +168,8 @@ export default function App() {
             <div className="flex-1 flex justify-end md:justify-start">
               <SearchBar onJump={(mid, tid) => goModule(mid, tid)} />
             </div>
+            {/* Language switcher */}
+            <LanguageSwitcher />
             {/* User avatar (desktop) */}
             <div className="hidden md:flex items-center gap-2 ml-2">
               {user.photoURL ? (
@@ -213,13 +218,13 @@ export default function App() {
         </main>
 
         <footer className="px-4 md:px-8 py-4 border-t border-slate-900 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Progress synced to Firebase · also cached locally.</span>
+          <span>{L.footerSync}</span>
           <span className="flex items-center gap-1.5">
-            Built with <span aria-label="love" className="text-rose-500">❤️</span> by{' '}
+            {L.builtWith} <span aria-label="love" className="text-rose-500">❤️</span> by{' '}
             <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
               Thanthrajnaani
             </span>{' '}
-            in Kundapura
+            {L.inKundapura}
           </span>
         </footer>
       </div>
