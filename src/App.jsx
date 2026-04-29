@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard.jsx'
 import ModulePage from './components/ModulePage.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import LoginPage from './components/LoginPage.jsx'
+import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import { curriculum } from './data/curriculum.js'
 import useProgress from './hooks/useProgress.js'
 import useFirestoreSync from './hooks/useFirestoreSync.js'
@@ -165,6 +166,8 @@ export default function App() {
             <div className="flex-1 flex justify-end md:justify-start">
               <SearchBar onJump={(mid, tid) => goModule(mid, tid)} />
             </div>
+            {/* Language switcher */}
+            <LanguageSwitcher />
             {/* User avatar (desktop) */}
             <div className="hidden md:flex items-center gap-2 ml-2">
               {user.photoURL ? (
