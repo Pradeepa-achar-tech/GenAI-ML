@@ -13,6 +13,7 @@ import {
   Terminal,
   Wrench,
 } from 'lucide-react'
+import { useUiText } from '../utils/uiText.js'
 
 const typeStyles = {
   'Mini Project': 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
@@ -76,6 +77,7 @@ function renderInline(line) {
 }
 
 function CopyButton({ text, label = 'Copy', size = 'sm' }) {
+  const L = useUiText()
   const [copied, setCopied] = useState(false)
   const handle = async (e) => {
     e.stopPropagation()
@@ -106,10 +108,10 @@ function CopyButton({ text, label = 'Copy', size = 'sm' }) {
           ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40'
           : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
       }`}
-      title="Copy to clipboard"
+      title={L.copy}
     >
       {copied ? <CheckCircle2 className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-      {copied ? 'Copied' : label}
+      {copied ? L.copied : label}
     </button>
   )
 }
@@ -179,6 +181,7 @@ function PromptStep({ step, idx }) {
 }
 
 export default function ProjectCard({ project }) {
+  const L = useUiText()
   const [open, setOpen] = useState(false)
   const typeClass =
     typeStyles[project.type] || 'bg-slate-700/40 text-slate-300 border-slate-600'
@@ -241,7 +244,7 @@ export default function ProjectCard({ project }) {
         <div className="pt-2 border-t border-slate-800">
           <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
             <Wrench className="w-3 h-3" />
-            <span className="uppercase tracking-wide">Tools</span>
+            <span className="uppercase tracking-wide">{L.tools}</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {project.tools.map((tool) => (
@@ -259,10 +262,10 @@ export default function ProjectCard({ project }) {
           <div className="flex items-center justify-between pt-3 border-t border-slate-800 -mx-1 mt-1">
             <span className="text-xs text-accent-300 font-medium flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5" />
-              Build blueprint available
+              {L.buildBlueprintAvailable}
             </span>
             <span className="flex items-center gap-1 text-[11px] text-slate-500">
-              {open ? 'Hide' : 'Open'}
+              {open ? L.hide : L.open}
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
                   open ? 'rotate-180 text-accent-400' : ''
@@ -287,7 +290,7 @@ export default function ProjectCard({ project }) {
             {(bp.functionalRequirements?.length || bp.technicalImplementation?.length) > 0 && (
               <div className="grid lg:grid-cols-2 gap-5">
                 {bp.functionalRequirements && bp.functionalRequirements.length > 0 && (
-                  <Section icon={ListChecks} label="Functional requirements" color="emerald">
+                  <Section icon={ListChecks} label={L.functionalRequirements} color="emerald">
                     <ul className="space-y-1.5">
                       {bp.functionalRequirements.map((req, idx) => (
                         <li key={idx} className="flex gap-2">
@@ -300,7 +303,7 @@ export default function ProjectCard({ project }) {
                 )}
 
                 {bp.technicalImplementation && bp.technicalImplementation.length > 0 && (
-                  <Section icon={Code2} label="Technical implementation" color="blue">
+                  <Section icon={Code2} label={L.technicalImplementation} color="blue">
                     <ul className="space-y-1.5">
                       {bp.technicalImplementation.map((item, idx) => (
                         <li key={idx} className="flex gap-2">
@@ -317,10 +320,10 @@ export default function ProjectCard({ project }) {
             {bp.prompts && bp.prompts.length > 0 && (
               <Section
                 icon={Terminal}
-                label="Claude Code prompts (copy-paste in order)"
+                label={L.claudePrompts}
                 color="accent"
                 accessory={
-                  <CopyButton text={allPromptsText} label="Copy all" size="sm" />
+                  <CopyButton text={allPromptsText} label={L.copyAll} size="sm" />
                 }
               >
                 <div className="space-y-2.5">
@@ -329,13 +332,13 @@ export default function ProjectCard({ project }) {
                   ))}
                 </div>
                 <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">
-                  Paste each prompt into Claude Code <em>in order</em>. Wait for it to finish before sending the next — each step builds on the last.
+                  {L.promptHint}
                 </p>
               </Section>
             )}
 
             {bp.deliverable && (
-              <Section icon={Sparkles} label="Final deliverable" color="amber">
+              <Section icon={Sparkles} label={L.finalDeliverable} color="amber">
                 <FormattedText text={bp.deliverable} />
               </Section>
             )}

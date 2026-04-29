@@ -12,12 +12,13 @@ import {
 import TopicItem from './TopicItem.jsx'
 import ProjectCard from './ProjectCard.jsx'
 import QuizPanel from './QuizPanel.jsx'
+import { getModuleCopy, useIsKannada, useUiText } from '../utils/uiText.js'
 
 const tabs = [
-  { id: 'topics', label: 'Topics', icon: ListChecks },
-  { id: 'projects', label: 'Projects', icon: Briefcase },
-  { id: 'quiz', label: 'Quiz', icon: Trophy },
-  { id: 'notes', label: 'Notes', icon: NotebookPen },
+  { id: 'topics', labelKey: 'topics', icon: ListChecks },
+  { id: 'projects', labelKey: 'projects', icon: Briefcase },
+  { id: 'quiz', labelKey: 'quiz', icon: Trophy },
+  { id: 'notes', labelKey: 'notes', icon: NotebookPen },
 ]
 
 export default function ModulePage({
@@ -33,6 +34,8 @@ export default function ModulePage({
   jumpTopicId,
   onJumpHandled,
 }) {
+  const L = useUiText()
+  const isKannada = useIsKannada()
   const [tab, setTab] = useState('topics')
   const [openSections, setOpenSections] = useState(() =>
     Object.fromEntries(module.sections.map((s) => [s.id, true]))
@@ -73,6 +76,7 @@ export default function ModulePage({
   const prog = useMemo(() => moduleProgress(module), [module, moduleProgress])
   const note = getNote(module.id)
   const quizResult = getQuizResult(module.id)
+  const moduleCopy = getModuleCopy(module, isKannada)
 
   return (
     <div className="animate-fade-in">
@@ -81,7 +85,7 @@ export default function ModulePage({
         className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white mb-4"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to dashboard
+        {L.backToDashboard}
       </button>
 
       {/* Header */}
@@ -91,9 +95,9 @@ export default function ModulePage({
         <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white">
-              {module.title}
+              {moduleCopy.title}
             </h1>
-            <p className="text-slate-400 mt-2 max-w-3xl">{module.description}</p>
+            <p className="text-slate-400 mt-2 max-w-3xl">{moduleCopy.description}</p>
           </div>
           <span className="badge bg-slate-900/70 text-slate-200 border border-slate-700">
             <Clock className="w-3.5 h-3.5 mr-1" />
@@ -103,7 +107,7 @@ export default function ModulePage({
 
         <div className="mt-4">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-            <span>Module progress</span>
+            <span>{L.moduleProgress}</span>
             <span className="font-semibold text-accent-300">
               {prog.done} / {prog.total} ({prog.pct}%)
             </span>
@@ -119,8 +123,9 @@ export default function ModulePage({
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-1 mb-5 border-b border-slate-800">
-        {tabs.map(({ id, label, icon: Icon }) => {
+        {tabs.map(({ id, labelKey, icon: Icon }) => {
           const active = tab === id
+          const label = L[labelKey]
           return (
             <button
               key={id}
@@ -217,16 +222,16 @@ export default function ModulePage({
       {tab === 'notes' && (
         <div className="card p-5 animate-fade-in">
           <label className="text-sm font-medium text-slate-300 mb-2 block">
-            Notes for {module.title}
+            {L.notesFor} {moduleCopy.title}
           </label>
           <textarea
             value={note}
             onChange={(e) => setNote(module.id, e.target.value)}
-            placeholder="Jot down anything: questions, links, snippets, study reminders…"
+            placeholder={L.notesPlaceholder}
             className="w-full min-h-[260px] bg-slate-950 border border-slate-800 focus:border-accent-500 outline-none rounded-lg p-3 text-sm text-slate-100 placeholder-slate-500 resize-y transition-colors"
           />
           <p className="text-xs text-slate-500 mt-2">
-            Saved automatically to your browser.
+            {L.notesSaved}
           </p>
         </div>
       )}

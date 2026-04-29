@@ -10,39 +10,123 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useLang } from '../contexts/LanguageContext.jsx'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
 
-const features = [
-  {
-    icon: BookOpen,
-    title: '267 Topics',
-    desc: 'Python to production LLMs, structured step-by-step',
-    color: 'text-accent-400 bg-accent-500/10 border-accent-500/20',
+const copy = {
+  en: {
+    badge: 'Structured · Hands-on · Community-driven',
+    headlinePrefix: 'Master',
+    headlineHighlight: 'GenAI & ML',
+    headlineSuffix: 'from scratch',
+    subtextStart:
+      'A structured, hands-on curriculum covering every layer - from Python fundamentals to deploying production LLMs.',
+    subtextStrong: 'No paywalls. Ever.',
+    welcome: 'Welcome back',
+    signInText:
+      'Sign in to sync your progress across all your devices and continue where you left off.',
+    signingIn: 'Signing in...',
+    continueGoogle: 'Continue with Google',
+    cancelled: 'Sign-in was cancelled.',
+    failed: 'Sign-in failed. Please try again.',
+    stats: [
+      { value: '267', label: 'Topics' },
+      { value: '100%', label: 'Free' },
+      { value: '∞', label: 'Access' },
+    ],
+    privacy: 'Progress stored securely in Firebase · Never shared',
+    footerPrefix: 'Built with',
+    footerSuffix: 'by Thanthrajnaani in Kundapura',
+    features: [
+      {
+        icon: BookOpen,
+        title: '267 Topics',
+        desc: 'Python to production LLMs, structured step-by-step',
+        color: 'text-accent-400 bg-accent-500/10 border-accent-500/20',
+      },
+      {
+        icon: Brain,
+        title: 'AI-First Curriculum',
+        desc: 'GenAI, ML, NLP, Computer Vision & Agents',
+        color: 'text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20',
+      },
+      {
+        icon: Trophy,
+        title: 'Quizzes & Projects',
+        desc: 'Test understanding with real-world challenges',
+        color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      },
+      {
+        icon: BarChart3,
+        title: 'Cloud Progress',
+        desc: 'Synced across all your devices automatically',
+        color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+      },
+      {
+        icon: Zap,
+        title: 'Fast & Free',
+        desc: 'No paywalls - learn at your own pace',
+        color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+      },
+    ],
   },
-  {
-    icon: Brain,
-    title: 'AI-First Curriculum',
-    desc: 'GenAI, ML, NLP, Computer Vision & Agents',
-    color: 'text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20',
+  kn: {
+    badge: 'Structured · Hands-on · Kannada-friendly',
+    headlinePrefix: 'Master',
+    headlineHighlight: 'GenAI & ML',
+    headlineSuffix: 'from scratch',
+    subtextStart:
+      'Python basics ಇಂದ production LLMs deploy ಮಾಡುವವರೆಗೆ, practical examples ಮತ್ತು step-by-step lessons ಜೊತೆ ಕಲಿಯಿರಿ.',
+    subtextStrong: 'Paywall ಇಲ್ಲ. Full course free.',
+    welcome: 'ಮತ್ತೆ welcome',
+    signInText:
+      'Sign in to sync your progress across all your devices and continue where you left off.',
+    signingIn: 'Sign in ಆಗುತ್ತಿದೆ...',
+    continueGoogle: 'Google ಮೂಲಕ continue ಮಾಡಿ',
+    cancelled: 'Sign-in cancel ಆಯಿತು.',
+    failed: 'Sign-in ಆಗಲಿಲ್ಲ. ಮತ್ತೆ try ಮಾಡಿ.',
+    stats: [
+      { value: '267', label: 'Topics' },
+      { value: '100%', label: 'Free' },
+      { value: '∞', label: 'Access' },
+    ],
+    privacy: 'Progress Firebase ನಲ್ಲಿ secure ಆಗಿ save ಆಗುತ್ತದೆ · Share ಮಾಡುವುದಿಲ್ಲ',
+    footerPrefix: 'Built with',
+    footerSuffix: 'Thanthrajnaani by Kundapura ನಲ್ಲಿ',
+    features: [
+      {
+        icon: BookOpen,
+        title: '267 Topics',
+        desc: 'Python ಇಂದ production LLMs ವರೆಗೆ step-by-step',
+        color: 'text-accent-400 bg-accent-500/10 border-accent-500/20',
+      },
+      {
+        icon: Brain,
+        title: 'AI-First Curriculum',
+        desc: 'GenAI, ML, NLP, Computer Vision ಮತ್ತು Agents',
+        color: 'text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20',
+      },
+      {
+        icon: Trophy,
+        title: 'Quizzes & Projects',
+        desc: 'Concepts check ಮಾಡಿ real-world tasks build ಮಾಡಿ',
+        color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      },
+      {
+        icon: BarChart3,
+        title: 'Cloud Progress',
+        desc: 'ನಿಮ್ಮ devices ಎಲ್ಲೆಡೆ progress sync ಆಗುತ್ತದೆ',
+        color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+      },
+      {
+        icon: Zap,
+        title: 'Fast & Free',
+        desc: 'Paywall ಇಲ್ಲ - ನಿಮ್ಮ pace ನಲ್ಲಿ ಕಲಿಯಿರಿ',
+        color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+      },
+    ],
   },
-  {
-    icon: Trophy,
-    title: 'Quizzes & Projects',
-    desc: 'Test understanding with real-world challenges',
-    color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  },
-  {
-    icon: BarChart3,
-    title: 'Cloud Progress',
-    desc: 'Synced across all your devices automatically',
-    color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
-  },
-  {
-    icon: Zap,
-    title: 'Fast & Free',
-    desc: 'No paywalls — learn at your own pace',
-    color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
-  },
-]
+}
 
 function GoogleIcon() {
   return (
@@ -57,6 +141,8 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const { signInWithGoogle } = useAuth()
+  const { lang } = useLang()
+  const text = copy[lang] ?? copy.en
   const [signing, setSigning] = useState(false)
   const [error, setError] = useState('')
 
@@ -68,8 +154,8 @@ export default function LoginPage() {
     } catch (err) {
       const msg =
         err.code === 'auth/popup-closed-by-user'
-          ? 'Sign-in was cancelled.'
-          : 'Sign-in failed. Please try again.'
+          ? text.cancelled
+          : text.failed
       setError(msg)
       setSigning(false)
     }
@@ -145,7 +231,7 @@ export default function LoginPage() {
             <div className="mb-5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-medium text-slate-400">
                 <Sparkles className="w-3 h-3 text-accent-400" />
-                Structured · Hands-on · Community-driven
+                {text.badge}
               </span>
             </div>
 
@@ -155,16 +241,15 @@ export default function LoginPage() {
               {/* Text */}
               <div className="flex-1 min-w-0">
                 <h1 className="text-3xl md:text-4xl font-bold text-white leading-[1.15] mb-3">
-                  Master{' '}
+                  {text.headlinePrefix}{' '}
                   <span className="bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">
-                    GenAI & ML
+                    {text.headlineHighlight}
                   </span>
-                  <br />from scratch
+                  <br />{text.headlineSuffix}
                 </h1>
                 <p className="text-slate-400 text-base leading-relaxed">
-                  A structured, hands-on curriculum covering every layer — from Python
-                  fundamentals to deploying production LLMs.{' '}
-                  <span className="text-emerald-400 font-semibold">No paywalls. Ever.</span>
+                  {text.subtextStart}{' '}
+                  <span className="text-emerald-400 font-semibold">{text.subtextStrong}</span>
                 </p>
               </div>
 
@@ -193,7 +278,7 @@ export default function LoginPage() {
 
             {/* Feature grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-left">
-              {features.map(({ icon: Icon, title, desc, color }) => (
+              {text.features.map(({ icon: Icon, title, desc, color }) => (
                 <div
                   key={title}
                   className="group flex items-start gap-3 p-3.5 rounded-xl
@@ -215,11 +300,11 @@ export default function LoginPage() {
 
           {/* ── Footer — bottom ── */}
           <p className="relative text-xs text-slate-600 text-center mt-8">
-            Built with{' '}
+            {text.footerPrefix}{' '}
             <span style={{ display: 'inline-block', animation: 'heartbeat 1.3s ease-in-out infinite' }}>
               ❤️
             </span>{' '}
-            by Thanthrajnaani in Kundapura
+            {text.footerSuffix}
           </p>
         </div>
 
@@ -243,6 +328,9 @@ export default function LoginPage() {
 
           {/* Card */}
           <div className="relative z-10 w-full max-w-[360px]">
+            <div className="mb-4 flex justify-center md:justify-end">
+              <LanguageSwitcher />
+            </div>
 
             {/* Mobile-only logo */}
             <div className="flex md:hidden items-center gap-2.5 mb-6">
@@ -263,10 +351,10 @@ export default function LoginPage() {
                 {/* Heading */}
                 <div className="mb-7">
                   <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
-                    Welcome back 👋
+                    {text.welcome} 👋
                   </h2>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    Sign in to sync your progress across all your devices and continue where you left off.
+                    {text.signInText}
                   </p>
                 </div>
 
@@ -288,7 +376,7 @@ export default function LoginPage() {
                   ) : (
                     <GoogleIcon />
                   )}
-                  <span>{signing ? 'Signing in…' : 'Continue with Google'}</span>
+                  <span>{signing ? text.signingIn : text.continueGoogle}</span>
                   {!signing && (
                     <ArrowRight className="w-4 h-4 text-gray-400 group-hover:translate-x-0.5 transition-transform ml-auto" />
                   )}
@@ -300,11 +388,7 @@ export default function LoginPage() {
 
                 {/* Stats strip */}
                 <div className="mt-7 grid grid-cols-3 gap-3 pt-6 border-t border-slate-700/50">
-                  {[
-                    { value: '267', label: 'Topics' },
-                    { value: '100%', label: 'Free' },
-                    { value: '∞', label: 'Access' },
-                  ].map(({ value, label }) => (
+                  {text.stats.map(({ value, label }) => (
                     <div key={label} className="text-center">
                       <p className="text-base font-bold bg-gradient-to-r from-accent-300 to-fuchsia-400 bg-clip-text text-transparent">
                         {value}
@@ -316,7 +400,7 @@ export default function LoginPage() {
 
                 {/* Privacy note */}
                 <p className="mt-5 text-[11px] text-slate-600 text-center leading-relaxed">
-                  Progress stored securely in Firebase · Never shared
+                  {text.privacy}
                 </p>
               </div>
             </div>

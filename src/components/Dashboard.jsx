@@ -1,5 +1,6 @@
 import { ArrowRight, BookMarked, Briefcase, Clock, Layers, Sparkles } from 'lucide-react'
 import { curriculum, getTotals } from '../data/curriculum.js'
+import { getModuleCopy, useIsKannada, useUiText } from '../utils/uiText.js'
 
 const accentTheme = {
   emerald: { bar: 'bg-emerald-500', ring: 'ring-emerald-500/30', text: 'text-emerald-300' },
@@ -25,6 +26,8 @@ const StatCard = ({ icon: Icon, label, value }) => (
 
 export default function Dashboard({ moduleProgress, overall, onOpenModule }) {
   const totals = getTotals()
+  const L = useUiText()
+  const isKannada = useIsKannada()
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -33,24 +36,23 @@ export default function Dashboard({ moduleProgress, overall, onOpenModule }) {
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-accent-500/10 blur-3xl" />
         <div className="relative flex items-center gap-2 text-accent-400 text-xs uppercase tracking-widest mb-2">
           <Sparkles className="w-3.5 h-3.5" />
-          Generative AI &amp; Machine Learning Program
+          {L.heroEyebrow}
         </div>
         <h1 className="relative text-2xl md:text-3xl font-bold text-white">
-          GenAI - ML Tutorial by{' '}
+          {L.heroTitlePrefix}{' '}
           <span className="font-extrabold italic tracking-wide bg-gradient-to-r from-accent-300 via-fuchsia-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(249,115,22,0.45)]">
             Thanthrajnaani
           </span>
         </h1>
         <p className="relative text-slate-400 mt-2 max-w-2xl">
-          Track every topic, project, and quiz across the full 7-module curriculum —
-          from Python fundamentals to deploying agentic AI.
+          {L.heroDescription}
         </p>
 
         <div className="relative mt-6">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span>Overall progress</span>
+            <span>{L.overallProgress}</span>
             <span className="font-semibold text-accent-300">
-              {overall.done} / {overall.total} topics ({overall.pct}%)
+              {overall.done} / {overall.total} {L.topics.toLowerCase()} ({overall.pct}%)
             </span>
           </div>
           <div className="h-2.5 w-full bg-slate-800 rounded-full overflow-hidden">
@@ -64,19 +66,20 @@ export default function Dashboard({ moduleProgress, overall, onOpenModule }) {
 
       {/* Stats */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard icon={Layers} label="Modules" value={totals.modules} />
-        <StatCard icon={BookMarked} label="Topics" value={totals.topics} />
-        <StatCard icon={Briefcase} label="Projects" value={totals.projects} />
-        <StatCard icon={Clock} label="Hours" value={`${totals.hours}h`} />
+        <StatCard icon={Layers} label={L.modules} value={totals.modules} />
+        <StatCard icon={BookMarked} label={L.topics} value={totals.topics} />
+        <StatCard icon={Briefcase} label={L.projects} value={totals.projects} />
+        <StatCard icon={Clock} label={L.hours} value={`${totals.hours}h`} />
       </section>
 
       {/* Module grid */}
       <section>
-        <h2 className="text-lg font-semibold text-white mb-4">Modules</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{L.modules}</h2>
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {curriculum.modules.map((m, idx) => {
             const prog = moduleProgress(m)
             const theme = accentTheme[m.accent] || accentTheme.orange
+            const copy = getModuleCopy(m, isKannada)
             const topicCount = m.sections.reduce(
               (acc, s) => acc + s.topics.length,
               0
@@ -94,20 +97,20 @@ export default function Dashboard({ moduleProgress, overall, onOpenModule }) {
                   <ArrowRight className="w-4 h-4 text-slate-500" />
                 </div>
                 <h3 className="text-base font-semibold text-white mb-1">
-                  {m.title}
+                  {copy.title}
                 </h3>
                 <p className="text-sm text-slate-400 line-clamp-2 mb-4">
-                  {m.description}
+                  {copy.description}
                 </p>
 
                 <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
-                  <span>{topicCount} topics</span>
+                  <span>{topicCount} {L.topics.toLowerCase()}</span>
                   <span className="text-slate-600">•</span>
-                  <span>{m.projects.length} projects</span>
+                  <span>{m.projects.length} {L.projects.toLowerCase()}</span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-slate-400">Progress</span>
+                  <span className="text-slate-400">{L.progress}</span>
                   <span className={`font-semibold ${theme.text}`}>{prog.pct}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
