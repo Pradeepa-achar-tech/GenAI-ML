@@ -78,7 +78,7 @@ const copy = {
     subtextStart:
       'Python basics ಇಂದ production LLMs deploy ಮಾಡುವವರೆಗೆ, practical examples ಮತ್ತು step-by-step lessons ಜೊತೆ ಕಲಿಯಿರಿ.',
     subtextStrong: 'Paywall ಇಲ್ಲ. Full course free.',
-    welcome: 'ಮತ್ತೆ welcome',
+    welcome: 'ಮತ್ತೆ ಸ್ವಾಗತ',
     signInText:
       'Sign in to sync your progress across all your devices and continue where you left off.',
     signingIn: 'Sign in ಆಗುತ್ತಿದೆ...',
@@ -91,8 +91,8 @@ const copy = {
       { value: '∞', label: 'Access' },
     ],
     privacy: 'Progress Firebase ನಲ್ಲಿ secure ಆಗಿ save ಆಗುತ್ತದೆ · Share ಮಾಡುವುದಿಲ್ಲ',
-    footerPrefix: 'Built with',
-    footerSuffix: 'Thanthrajnaani by Kundapura ನಲ್ಲಿ',
+    footerPrefix: '',
+    footerSuffix: 'ಕುಂದಾಪುರದಲ್ಲಿ ತಂತ್ರಜ್ಞಾನಿ ಅವ್ರು ಪ್ರೀತಿಯಿಂದ ಅಭಿವೃದ್ಧಿಪಡಿಸಿದ ಅಪ್ಲಿಕೇಶನ್',
     features: [
       {
         icon: BookOpen,
@@ -300,11 +300,17 @@ export default function LoginPage() {
 
           {/* ── Footer — bottom ── */}
           <p className="relative text-xs text-slate-600 text-center mt-8">
-            {text.footerPrefix}{' '}
-            <span style={{ display: 'inline-block', animation: 'heartbeat 1.3s ease-in-out infinite' }}>
-              ❤️
-            </span>{' '}
-            {text.footerSuffix}
+            {lang === 'kn' ? (
+              text.footerSuffix
+            ) : (
+              <>
+                {text.footerPrefix}{' '}
+                <span style={{ display: 'inline-block', animation: 'heartbeat 1.3s ease-in-out infinite' }}>
+                  ❤️
+                </span>{' '}
+                {text.footerSuffix}
+              </>
+            )}
           </p>
         </div>
 
